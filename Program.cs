@@ -21,7 +21,8 @@ namespace lab_2_1
                 Console.WriteLine("1. Show all tables");
                 Console.WriteLine("2. Show table data");
                 Console.WriteLine("3. Add data into table");
-                Console.WriteLine("4. Exit");
+                Console.WriteLine("4. Queries");
+                Console.WriteLine("5. Exit");
                 Console.Write("Choose option: ");
                 string choice = Console.ReadLine();
 
@@ -41,6 +42,10 @@ namespace lab_2_1
                         dbManagement.AddDataToTable(option_addData);
                         break;
                     case "4":
+                        Console.WriteLine("Additional Queries: ");
+                        dbManagement.ExecuteComplexQuery();
+                        break;
+                    case "5":
                         Console.WriteLine("Exiting...");
                         return;
                     default:

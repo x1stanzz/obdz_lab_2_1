@@ -166,5 +166,70 @@ namespace lab_2_1
                 }
             }
         }
+
+        public void ExecuteComplexQuery()
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query1 = @"SELECT Book.Name AS BookName, Author.Name AS AuthorName, Publisher.Name AS PublisherName
+                              FROM Book
+                              INNER JOIN Author ON Book.AuthorId = Author.Id
+                              INNER JOIN Publisher ON Book.PublisherId = Publisher.Id";
+
+                DataTable result1 = ExecuteQuery(connection, query1);
+
+                string query2 = @"SELECT Name, Email, Country, City, Address
+                              FROM Customer
+                              WHERE Country = @Country";
+
+                SqlParameter countryParam = new SqlParameter("@Country", SqlDbType.NVarChar);
+                countryParam.Value = "UK";
+
+                DataTable result2 = ExecuteQuery(connection, query2, countryParam);
+
+                string query3 = @"SELECT COUNT(Id) AS TotalAuthors
+                              FROM Author";
+
+                DataTable result3 = ExecuteQuery(connection, query3);
+
+                Console.WriteLine("Join tables query:");
+                PrintDataTable(result1);
+
+                Console.WriteLine("\nFiltration query:");
+                PrintDataTable(result2);
+
+                Console.WriteLine("\nAggregate functions query:");
+                PrintDataTable(result3);
+            }
+        }
+
+        private DataTable ExecuteQuery(SqlConnection connection, string query, params SqlParameter[] parameters)
+        {
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddRange(parameters);
+
+                using (SqlDataAdapter adapter = new SqlDataAdapter(command))
+                {
+                    DataTable dataTable = new DataTable();
+                    adapter.Fill(dataTable);
+                    return dataTable;
+                }
+            }
+        }
+
+        private void PrintDataTable(DataTable dataTable)
+        {
+            foreach (DataRow row in dataTable.Rows)
+            {
+                foreach (DataColumn column in dataTable.Columns)
+                {
+                    Console.Write($"{column.ColumnName}: {row[column]} \t");
+                }
+                Console.WriteLine();
+            }
+        }
     }
 }
